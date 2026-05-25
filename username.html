@@ -1,67 +1,89 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>Create Username</title>
+</head>
 <body>
 
 <h2>Create Username</h2>
+<p id="emailBox">Loading...</p>
 
-<input id="username"
-placeholder="Username">
-
-<button id="save">
-Continue
-</button>
+<input id="username" placeholder="Enter username">
+<br><br>
+<button id="saveBtn">Continue</button>
 
 <script type="module">
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
 import {
-getAuth
-}
-from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 import {
-getFirestore,
-doc,
-setDoc
-}
-from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+  getFirestore,
+  doc,
+  setDoc,
+  getDocs,
+  collection,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-const firebaseConfig={
-
-apiKey:"YOURKEY",
-authDomain:"YOURDOMAIN",
-projectId:"YOURPROJECTID"
-
+const firebaseConfig = {
+  apiKey: "AIzaSyBuapWoAiZKhkNOfUos9ZuvzisS39YGs1o",
+  authDomain: "skibidilogin-bbf42.firebaseapp.com",
+  projectId: "skibidilogin-bbf42",
+  storageBucket: "skibidilogin-bbf42.firebasestorage.app",
+  messagingSenderId: "1008118855931",
+  appId: "1:1008118855931:web:fb7784385be188150d585e",
+  measurementId: "G-JJX8RGZ210"
 };
 
-const app=initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+const db = getFirestore();
 
-const auth=getAuth();
-const db=getFirestore();
+let currentUser = null;
 
-document.getElementById("save")
-.onclick=async()=>{
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location = "index.html";
+    return;
+  }
 
-let user=auth.currentUser;
+  currentUser = user;
+  document.getElementById("emailBox").innerText = user.email;
+});
 
-let username=
-document.getElementById("username").value;
+document.getElementById("saveBtn").onclick = async () => {
 
-await setDoc(
-doc(db,"users",user.uid),
-{
+  const username = document.getElementById("username").value.trim();
 
-email:user.email,
-username:username
+  if (username.length < 3) {
+    alert("Username too short");
+    return;
+  }
 
-}
+  const q = query(
+    collection(db, "users"),
+    where("username", "==", username)
+  );
 
-);
+  const result = await getDocs(q);
 
-window.location="skibidi.html";
+  if (!result.empty) {
+    alert("Username already taken");
+    return;
+  }
 
+  await setDoc(doc(db, "users", currentUser.uid), {
+    email: currentUser.email,
+    username: username
+  });
+
+  window.location = "skibidi.html";
 };
 
 </script>
