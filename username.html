@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Create Username</h2>
+
+<input id="username"
+placeholder="Username">
+
+<button id="save">
+Continue
+</button>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+getAuth
+}
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+setDoc
+}
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+const firebaseConfig={
+
+apiKey:"YOURKEY",
+authDomain:"YOURDOMAIN",
+projectId:"YOURPROJECTID"
+
+};
+
+const app=initializeApp(firebaseConfig);
+
+const auth=getAuth();
+const db=getFirestore();
+
+document.getElementById("save")
+.onclick=async()=>{
+
+let user=auth.currentUser;
+
+let username=
+document.getElementById("username").value;
+
+await setDoc(
+doc(db,"users",user.uid),
+{
+
+email:user.email,
+username:username
+
+}
+
+);
+
+window.location="skibidi.html";
+
+};
+
+</script>
+
+</body>
+</html>
