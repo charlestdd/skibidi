@@ -1,70 +1,56 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>Login</title>
+</head>
 <body>
 
-<button id="login">
-Login with Google
-</button>
+<h2>Login</h2>
+<button id="loginBtn">Sign in with Google</button>
 
 <script type="module">
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 import {
-getAuth,
-GoogleAuthProvider,
-signInWithPopup
-}
-from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+  getFirestore,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-import {
-getFirestore,
-doc,
-getDoc
-}
-from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
-const firebaseConfig={
-
-apiKey:"YOURKEY",
-authDomain:"YOURDOMAIN",
-projectId:"YOURPROJECTID"
-
+const firebaseConfig = {
+  apiKey: "AIzaSyBuapWoAiZKhkNOfUos9ZuvzisS39YGs1o",
+  authDomain: "skibidilogin-bbf42.firebaseapp.com",
+  projectId: "skibidilogin-bbf42",
+  storageBucket: "skibidilogin-bbf42.firebasestorage.app",
+  messagingSenderId: "1008118855931",
+  appId: "1:1008118855931:web:fb7784385be188150d585e",
+  measurementId: "G-JJX8RGZ210"
 };
 
-const app=initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+const db = getFirestore();
 
-const auth=getAuth();
-const db=getFirestore();
+const provider = new GoogleAuthProvider();
 
-const provider=new GoogleAuthProvider();
+document.getElementById("loginBtn").onclick = async () => {
 
-document.getElementById("login")
-.onclick=async()=>{
+  const result = await signInWithPopup(auth, provider);
+  const user = result.user;
 
-let result=
-await signInWithPopup(auth,provider);
+  const snap = await getDoc(doc(db, "users", user.uid));
 
-let user=result.user;
-
-let userDoc=
-await getDoc(
-doc(db,"users",user.uid)
-);
-
-if(
-userDoc.exists() &&
-userDoc.data().username
-){
-
-window.location="skibidi.html";
-
-}else{
-
-window.location="username.html";
-
-}
+  if (snap.exists() && snap.data().username) {
+    window.location = "skibidi.html";
+  } else {
+    window.location = "username.html";
+  }
 
 };
 
