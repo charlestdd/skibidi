@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<button id="login">
+Login with Google
+</button>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+getAuth,
+GoogleAuthProvider,
+signInWithPopup
+}
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+getDoc
+}
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+const firebaseConfig={
+
+apiKey:"YOURKEY",
+authDomain:"YOURDOMAIN",
+projectId:"YOURPROJECTID"
+
+};
+
+const app=initializeApp(firebaseConfig);
+
+const auth=getAuth();
+const db=getFirestore();
+
+const provider=new GoogleAuthProvider();
+
+document.getElementById("login")
+.onclick=async()=>{
+
+let result=
+await signInWithPopup(auth,provider);
+
+let user=result.user;
+
+let userDoc=
+await getDoc(
+doc(db,"users",user.uid)
+);
+
+if(
+userDoc.exists() &&
+userDoc.data().username
+){
+
+window.location="skibidi.html";
+
+}else{
+
+window.location="username.html";
+
+}
+
+};
+
+</script>
+
+</body>
+</html>
